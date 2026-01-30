@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'database_service.dart';
@@ -76,6 +77,15 @@ class HypermaxAnalyticsService {
     }
   }
 
+  // Determine which Hypermax principle applies to this session
+  String _determineHypermaxPrinciple(String skill, double energy, double focus) {
+    if (energy >= 80 && focus >= 85) return 'Energy Management';
+    if (focus >= 80) return 'Focus Optimization';
+    if (skill.contains('Writing') || skill.contains('Math')) return 'Progressive Overload';
+    if (energy < 60) return 'Recovery Integration';
+    return 'Strategic Timing';
+  }
+
   // Record study session with Hypermax metrics
   Future<void> recordHypermaxSession({
     required String examType,
@@ -134,13 +144,6 @@ class HypermaxAnalyticsService {
     
     // Save data
     await _saveAnalyticsData();
-  }
-
-  String _determineHypermaxPrinciple(String skill, double energy, double focus) {
-    if (energy > 80 && focus > 85) return 'Energy Management';
-    if (focus > 80) return 'Focus Optimization';
-    if (energy > 70) return 'Strategic Timing';
-    return 'Progressive Overload';
   }
 
   double _calculateCognitiveLoad(int duration, int problems, int distractions, double accuracy) {

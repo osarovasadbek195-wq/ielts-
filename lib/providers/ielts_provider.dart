@@ -47,23 +47,27 @@ class IELTSProvider extends ChangeNotifier {
   }
 
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    _currentBand = prefs.getDouble('ielts_current_band') ?? 5.5;
-    _wordsLearned = prefs.getInt('ielts_words_learned') ?? 0;
-    _essaysWritten = prefs.getInt('ielts_essays_written') ?? 0;
-    _practiceTests = prefs.getInt('ielts_practice_tests') ?? 0;
-    _streak = prefs.getInt('ielts_streak') ?? 0;
-    _lastStudyDate = prefs.getString('ielts_last_study_date') ?? '';
-    
-    // Load today's progress
-    final today = DateTime.now().toString().substring(0, 10);
-    if (prefs.getString('ielts_today_date') == today) {
-      _morningCompleted = prefs.getBool('ielts_morning_completed') ?? false;
-      _afternoonCompleted = prefs.getBool('ielts_afternoon_completed') ?? false;
-      _eveningCompleted = prefs.getBool('ielts_evening_completed') ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _currentBand = prefs.getDouble('ielts_current_band') ?? 5.5;
+      _wordsLearned = prefs.getInt('ielts_words_learned') ?? 0;
+      _essaysWritten = prefs.getInt('ielts_essays_written') ?? 0;
+      _practiceTests = prefs.getInt('ielts_practice_tests') ?? 0;
+      _streak = prefs.getInt('ielts_streak') ?? 0;
+      _lastStudyDate = prefs.getString('ielts_last_study_date') ?? '';
+      
+      // Load today's progress
+      final today = DateTime.now().toString().substring(0, 10);
+      if (prefs.getString('ielts_today_date') == today) {
+        _morningCompleted = prefs.getBool('ielts_morning_completed') ?? false;
+        _afternoonCompleted = prefs.getBool('ielts_afternoon_completed') ?? false;
+        _eveningCompleted = prefs.getBool('ielts_evening_completed') ?? false;
+      }
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading IELTS data: $e');
     }
-    
-    notifyListeners();
   }
 
   Future<void> _saveData() async {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -16,14 +17,19 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
-    final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'ielts_sat_prep.db');
+    try {
+      final databasesPath = await getDatabasesPath();
+      final path = join(databasesPath, 'ielts_sat_prep.db');
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+      return await openDatabase(
+        path,
+        version: 1,
+        onCreate: _onCreate,
+      );
+    } catch (e) {
+      debugPrint('Database initialization error: $e');
+      rethrow;
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {

@@ -1,260 +1,148 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
-import 'dart:math';
 
-class FunZoneScreen extends StatefulWidget {
+class FunZoneScreen extends StatelessWidget {
   const FunZoneScreen({super.key});
 
-  @override
-  State<FunZoneScreen> createState() => _FunZoneScreenState();
-}
-
-class _FunZoneScreenState extends State<FunZoneScreen> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  int _streak = 0;
-  int _wordsCollected = 0;
-  bool _isPlaying = false;
-
-  final funActivities = [
-    {
-      'title': 'Quick Math Challenge',
-      'description': 'Solve math problems in 60 seconds',
-      'icon': Icons.timer,
-      'color': Colors.purple,
-      'animation': 'timer',
-    },
-    {
-      'title': 'Word Builder',
-      'description': 'Create words from letters',
-      'icon': Icons.text_fields,
-      'color': Colors.blue,
-      'animation': 'book',
-    },
-    {
-      'title': 'Memory Cards',
-      'description': 'Test your memory with cards',
-      'icon': Icons.psychology,
-      'color': Colors.green,
-      'animation': 'brain',
-    },
-    {
-      'title': 'Breathing Exercise',
-      'description': 'Relax with guided breathing',
-      'icon': Icons.air,
-      'color': Colors.teal,
-      'animation': 'meditation',
-    },
-    {
-      'title': 'Motivational Quotes',
-      'description': 'Get inspired with quotes',
-      'icon': Icons.format_quote,
-      'color': Colors.orange,
-      'animation': 'star',
-    },
-    {
-      'title': 'Study Playlist',
-      'description': 'Focus music for studying',
-      'icon': Icons.music_note,
-      'color': Colors.red,
-      'animation': 'music',
-    },
+  final List<String> quotes = const [
+    "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+    "The only way to do great work is to love what you do.",
+    "Believe you can and you're halfway there.",
+    "Education is the most powerful weapon which you can use to change the world.",
+    "The future belongs to those who believe in the beauty of their dreams.",
   ];
-
-  final quotes = [
-    "Success is the sum of small efforts repeated day in and day out.",
-    "The expert in anything was once a beginner.",
-    "Your future is created by what you do today, not tomorrow.",
-    "Don't watch the clock; do what it does. Keep going.",
-    "The secret of getting ahead is getting started.",
-    "You don't have to be great to start, but you have to start to be great.",
-  ];
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fun Zone'),
-        elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        actions: [
-          IconButton(
-            onPressed: _showStats,
-            icon: const Icon(Icons.leaderboard),
-          ),
-        ],
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Daily Quote Card
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.purple[400]!, Colors.pink[400]!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            // Daily Inspiration
+            Card(
+              elevation: 4,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple[400]!, Colors.pink[400]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Card(
-                color: Colors.transparent,
-                elevation: 0,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.auto_awesome, color: Colors.white),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Daily Inspiration',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.auto_awesome, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'Daily Inspiration',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        quotes[Random().nextInt(quotes.length)],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      quotes[DateTime.now().day % quotes.length],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
             
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             
-            // Stats Row
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Study Streak',
-                    '$_streak days',
-                    Icons.local_fire_department,
-                    Colors.orange,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Words Learned',
-                    '$_wordsCollected',
-                    Icons.book,
-                    Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Activities Grid
-            Text(
-              'Quick Activities',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.1,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: funActivities.length,
-              itemBuilder: (context, index) {
-                final activity = funActivities[index];
-                return _buildActivityCard(activity);
-              },
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Relaxation Section
-            Text(
-              'Take a Break',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
+            // Study Stats
             Card(
               elevation: 4,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Placeholder for Lottie animation
-                    Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.teal[200]!, Colors.teal[400]!],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.self_improvement,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     const Text(
-                      '5-Minute Meditation',
+                      'Study Statistics',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
+                    _buildStatItem('Total Study Hours', '127'),
+                    _buildStatItem('Words Learned', '3,456'),
+                    _buildStatItem('Practice Tests', '23'),
+                    _buildStatItem('Current Streak', '15 days'),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Quick Activities
+            const Text(
+              'Quick Activities',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _buildActivityCard('Math Quiz', Icons.calculate, Colors.blue),
+                _buildActivityCard('Word Builder', Icons.text_fields, Colors.green),
+                _buildActivityCard('Memory Game', Icons.psychology, Colors.purple),
+                _buildActivityCard('Breathing', Icons.air, Colors.teal),
+              ],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Relaxation
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     const Text(
-                      'Clear your mind and refocus',
+                      'Relaxation Exercises',
                       style: TextStyle(
-                        color: Colors.grey,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: _startMeditation,
-                      icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-                      label: Text(_isPlaying ? 'Stop' : 'Start'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 40),
-                      ),
-                    ),
+                    _buildRelaxationItem('Deep Breathing', '5 minutes'),
+                    _buildRelaxationItem('Meditation', '10 minutes'),
+                    _buildRelaxationItem('Stretch Break', '3 minutes'),
                   ],
                 ),
               ),
@@ -265,77 +153,57 @@ class _FunZoneScreenState extends State<FunZoneScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildStatItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildActivityCard(Map<String, dynamic> activity) {
+  Widget _buildActivityCard(String title, IconData icon, Color color) {
     return Card(
       elevation: 4,
       child: InkWell(
-        onTap: () => _startActivity(activity),
+        onTap: () {
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text('$title coming soon!')),
+          // );
+        },
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [color.withOpacity(0.1), color.withOpacity(0.2)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: (activity['color'] as Color).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  activity['icon'] as IconData,
-                  color: activity['color'] as Color,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(height: 12),
+              Icon(icon, color: color, size: 32),
+              const SizedBox(height: 8),
               Text(
-                activity['title'] as String,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                activity['description'] as String,
+                title,
                 style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 11,
+                  color: color,
+                  fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -344,212 +212,22 @@ class _FunZoneScreenState extends State<FunZoneScreen> {
     );
   }
 
-  void _startActivity(Map<String, dynamic> activity) {
-    final title = activity['title'] as String;
-    
-    switch (title) {
-      case 'Quick Math Challenge':
-        _showMathChallenge();
-        break;
-      case 'Word Builder':
-        _showWordBuilder();
-        break;
-      case 'Memory Cards':
-        _showMemoryGame();
-        break;
-      case 'Breathing Exercise':
-        _showBreathingExercise();
-        break;
-      case 'Motivational Quotes':
-        _showMoreQuotes();
-        break;
-      case 'Study Playlist':
-        _showMusicPlayer();
-        break;
-    }
-  }
-
-  void _showMathChallenge() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Math Challenge'),
-        content: const Text('Coming soon! Test your math skills against the clock.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+  Widget _buildRelaxationItem(String title, String duration) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(Icons.self_improvement, color: Colors.teal),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(title),
           ),
-        ],
-      ),
-    );
-  }
-
-  void _showWordBuilder() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Word Builder'),
-        content: const Text('Coming soon! Create words from given letters.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showMemoryGame() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Memory Cards'),
-        content: const Text('Coming soon! Match pairs of cards to test your memory.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showBreathingExercise() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Breathing Exercise'),
-        content: const Text('Coming soon! Follow the guide for relaxation.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showMoreQuotes() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('More Quotes'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: quotes.map((quote) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('• $quote'),
-            )).toList(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showMusicPlayer() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Study Music'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.music_note, size: 64, color: Colors.purple),
-            const SizedBox(height: 16),
-            const Text('Relaxing study music'),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.skip_previous),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.play_arrow),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.skip_next),
-                ),
-              ],
+          Text(
+            duration,
+            style: const TextStyle(
+              color: Colors.teal,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _startMeditation() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
-    
-    if (_isPlaying) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Meditation started. Focus on your breath.'),
-          backgroundColor: Colors.teal,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Meditation paused. Take a deep breath.'),
-          backgroundColor: Colors.grey,
-        ),
-      );
-    }
-  }
-
-  void _showStats() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Your Stats'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.local_fire_department, color: Colors.orange),
-              title: const Text('Current Streak'),
-              subtitle: Text('$_streak days'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.book, color: Colors.blue),
-              title: const Text('Total Words'),
-              subtitle: Text('$_wordsCollected words'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.emoji_events, color: Colors.amber),
-              title: const Text('Achievements'),
-              subtitle: Text('5 unlocked'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
           ),
         ],
       ),
