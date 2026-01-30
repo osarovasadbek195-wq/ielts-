@@ -9,7 +9,6 @@ workflows:
        # xcode: latest  # Uncomment when iOS setup is ready
        # cocoapods: default  # Uncomment when iOS setup is ready
        java: 17
-       gradle: latest
        
      cache:
        cache_paths:
@@ -93,20 +92,3 @@ workflows:
        # - build/**/outputs/**/*.ipa  # Uncomment when iOS setup is ready
        - coverage/lcov.info
        - flutter_drive.log
-       
-     publishing:
-       # Optional: Email notifications - uncomment when needed
-       # email:
-       #   recipients:
-       #     - user@example.com
-           
-       # Optional: Uncomment when ready for Google Play publishing
-       # google_play:
-       #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-       #   track: internal
-         
-       # Optional: Uncomment when ready for App Store publishing  
-       # app_store_connect:
-       #   apple_id: $APP_ID
-       #   short_version: $BUILD_NUMBER
-       #   submit_to_testflight: true
