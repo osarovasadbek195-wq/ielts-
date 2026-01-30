@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../services/hypermax_analytics_service.dart';
-import '../widgets/simple_progress_chart.dart';
 
 class HypermaxAnalyticsScreen extends StatefulWidget {
   const HypermaxAnalyticsScreen({super.key});
