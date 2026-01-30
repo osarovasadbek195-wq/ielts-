@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class ResourcesScreen extends StatefulWidget {
   const ResourcesScreen({super.key});
