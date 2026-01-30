@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../services/task_service.dart';
-import '../services/notification_service.dart';
 
 class TaskProvider extends ChangeNotifier {
   final TaskService _taskService = TaskService();
-  final NotificationService _notificationService = NotificationService();
   
   List<Task> get tasks => _taskService.tasks;
   List<Task> get completedTasks => _taskService.completedTasks;
@@ -53,15 +51,6 @@ class TaskProvider extends ChangeNotifier {
       priority: priority,
       category: category,
     );
-    
-    // Schedule notification for task deadline
-    if (priority == 'high' || priority == 'medium') {
-      await _notificationService.scheduleTaskDeadlineReminder(
-        taskTitle: title,
-        deadline: deadline,
-        priority: priority,
-      );
-    }
   }
 
   Future<void> updateTask(
@@ -84,27 +73,6 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> completeTask(Task task) async {
     await _taskService.completeTask(task);
-    
-    // Show achievement notification for completing high-priority tasks
-    if (task.priority == 'high') {
-      await _notificationService.showAchievementNotification(
-        title: 'High Priority Task Completed!',
-        description: 'Great job completing: ${task.title}',
-      );
-    }
-    
-    // Check for streak achievement
-    final completedToday = completedTasks.where((t) => 
-      t.completedAt != null && 
-      t.completedAt!.day == DateTime.now().day
-    ).length;
-    
-    if (completedToday == 1) {
-      await _notificationService.showAchievementNotification(
-        title: 'First Task Today!',
-        description: 'Keep up the great work!',
-      );
-    }
   }
 
   Future<void> uncompleteTask(Task task) async {
@@ -254,9 +222,8 @@ class TaskProvider extends ChangeNotifier {
       // Calculate streak (simplified - in real app, you'd track this in SharedPreferences)
       final streakDays = await _calculateStreakDays();
       
-      if (streakDays > 0 && (streakDays % 7 == 0 || streakDays % 30 == 0)) {
-        await _notificationService.showStreakNotification(streakDays);
-      }
+      // Streak tracking without notifications
+      debugPrint('Study streak: $streakDays days');
     }
   }
 

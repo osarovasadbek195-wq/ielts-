@@ -11,7 +11,6 @@ import 'services/gamification_service.dart';
 import 'services/offline_service.dart';
 import 'services/hypermax_analytics_service.dart';
 import 'services/task_service.dart';
-import 'services/notification_service.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
@@ -36,15 +35,8 @@ void main() async {
     await OfflineService().initialize();
     await HypermaxAnalyticsService().initialize();
     
-    // Initialize task and notification services
+    // Initialize task service
     await TaskService().initialize();
-    
-    // Only initialize notifications on mobile platforms
-    if (!kIsWeb) {
-      await NotificationService().initialize();
-      await NotificationService().requestPermissions();
-      await NotificationService().scheduleDailyMotivation();
-    }
     
   } catch (e) {
     debugPrint('Service initialization error: $e');
