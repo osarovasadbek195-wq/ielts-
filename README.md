@@ -1,6 +1,15 @@
-# ielts_sat_prep_app
+# IELTS & SAT Preparation App
 
-A new Flutter project.
+A comprehensive Flutter app for IELTS Band 8 and SAT 1500+ preparation.
+
+## Features
+
+- Daily notifications and reminders
+- Progress tracking for both IELTS and SAT
+- Study schedule management
+- Streak counter and gamification
+- Performance analytics
+- Hypermax method integration
 
 ## Getting Started
 
