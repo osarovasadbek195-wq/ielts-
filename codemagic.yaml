@@ -6,15 +6,11 @@ workflows:
      
      environment:
        flutter: stable
-       # xcode: latest  # Uncomment when iOS setup is ready
-       # cocoapods: default  # Uncomment when iOS setup is ready
        java: 17
        
      cache:
        cache_paths:
          - ~/.pub-cache
-         # - ~/Library/Caches/CocoaPods  # Uncomment when iOS setup is ready
-         # - Pods  # Uncomment when iOS setup is ready
          - .gradle
          
      triggering:
@@ -27,68 +23,13 @@ workflows:
            source: true
            
      scripts:
-       # Optional: Set up keychain for iOS code signing - uncomment when iOS setup is ready
-       # - name: Set up keychain for iOS code signing
-       #  script: |
-       #    keychain initialize
-           
-       # Optional: Set up Ruby gems - uncomment when iOS setup is ready  
-       # - name: Set up Ruby gems
-       #  script: |
-       #    cd ios && bundle install
-           
        - name: Install Flutter dependencies
          script: |
            flutter pub get
            
-       # Optional: Install CocoaPods dependencies - uncomment when iOS setup is ready
-       # - name: Install CocoaPods dependencies
-       #  script: |
-       #    cd ios && pod install
-           
-       - name: Run Flutter tests
-         script: |
-           flutter test --coverage
-           
        - name: Build Android APK
          script: |
            flutter build apk --release --no-shrink
-           
-       # Optional: Build Android App Bundle - uncomment when keystore is ready
-       # - name: Build Android App Bundle
-       #  script: |
-       #    if [ -n "$CM_KEYSTORE" ]; then
-       #      echo $CM_KEYSTORE | base64 --decode > keystore.jks
-       #      flutter build appbundle --release \
-       #        --keystore keystore.jks \
-       #        --store-password $CM_KEYSTORE_PASSWORD \
-       #        --key-password $CM_KEY_PASSWORD \
-       #        --key-alias $CM_KEY_ALIAS
-       #    fi
-           
-       # Optional: Build iOS IPA - uncomment when iOS setup is ready
-       # - name: Build iOS IPA
-       #  script: |
-       #    if [ -n "$CM_CERTIFICATE" ]; then
-       #      echo $CM_CERTIFICATE | base64 --decode > certificate.p12
-       #      echo $CM_PROVISIONING_PROFILE | base64 --decode > profile.mobileprovision
-       #      keychain use-login
-       #      keychain add-certificate certificate.p12 -p $CM_CERTIFICATE_PASSWORD
-       #      keychain add-provisioning-profile profile.mobileprovision
-       #    fi
-       #    flutter build ios --release --no-codesign
-           
-       # Optional: Post build webhook - uncomment if needed
-       # - name: Post build webhook
-       #  script: |
-       #    curl -X POST \
-       #      -H "Content-Type: application/json" \
-       #      -d '{"text":"✅ Build completed successfully!"}' \
-       #      $SLACK_WEBHOOK_URL || true
              
      artifacts:
        - build/**/outputs/**/*.apk
-       # - build/**/outputs/**/*.aab  # Uncomment when keystore is ready
-       # - build/**/outputs/**/*.ipa  # Uncomment when iOS setup is ready
-       - coverage/lcov.info
-       - flutter_drive.log
