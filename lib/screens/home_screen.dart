@@ -6,6 +6,8 @@ import '../widgets/study_card.dart';
 import '../widgets/progress_chart.dart';
 import '../widgets/streak_counter.dart';
 import '../widgets/daily_schedule.dart';
+import 'resources_screen.dart';
+import 'fun_zone_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     
     // Load today's progress
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -81,9 +83,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 tabs: const [
                   Tab(text: 'IELTS', icon: Icon(Icons.book)),
                   Tab(text: 'SAT', icon: Icon(Icons.calculate)),
+                  Tab(text: 'Resources', icon: Icon(Icons.library_books)),
+                  Tab(text: 'Fun Zone', icon: Icon(Icons.emoji_emotions)),
                 ],
                 indicatorColor: Colors.white,
                 labelColor: Colors.white,
+                isScrollable: true,
               ),
             ),
           ];
@@ -93,6 +98,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             _buildIELTSTab(),
             _buildSATTab(),
+            const ResourcesScreen(),
+            const FunZoneScreen(),
           ],
         ),
       ),

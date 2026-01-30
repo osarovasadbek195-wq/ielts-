@@ -1,0 +1,108 @@
+workflows:
+   main-workflow:
+     name: IELTS & SAT Prep App CI/CD
+     instance_type: mac_mini
+     max_build_duration: 30
+     
+     environment:
+       flutter: stable
+       xcode: latest
+       cocoapods: default
+       java: 17
+       gradle: latest
+       
+     cache:
+       cache_paths:
+         - ~/.pub-cache
+         - ~/Library/Caches/CocoaPods
+         - Pods
+         - .gradle
+         
+     triggering:
+       events:
+         - push
+         - pull_request
+       branch_patterns:
+         - pattern: main
+           include: true
+           source: true
+           
+     scripts:
+       - name: Set up keychain for iOS code signing
+         script: |
+           keychain initialize
+           
+       - name: Set up Ruby gems
+         script: |
+           cd ios && bundle install
+           
+       - name: Install Flutter dependencies
+         script: |
+           flutter pub get
+           
+       - name: Install CocoaPods dependencies
+         script: |
+           cd ios && pod install
+           
+       - name: Run Flutter tests
+         script: |
+           flutter test --coverage
+           
+       - name: Build Android APK
+         script: |
+           flutter build apk --release --no-shrink
+           
+       - name: Build Android App Bundle
+         script: |
+           if [ -n "$CM_KEYSTORE" ]; then
+             echo $CM_KEYSTORE | base64 --decode > keystore.jks
+             flutter build appbundle --release \
+               --keystore keystore.jks \
+               --store-password $CM_KEYSTORE_PASSWORD \
+               --key-password $CM_KEY_PASSWORD \
+               --key-alias $CM_KEY_ALIAS
+           fi
+           
+       - name: Build iOS IPA
+         script: |
+           if [ -n "$CM_CERTIFICATE" ]; then
+             echo $CM_CERTIFICATE | base64 --decode > certificate.p12
+             echo $CM_PROVISIONING_PROFILE | base64 --decode > profile.mobileprovision
+             keychain use-login
+             keychain add-certificate certificate.p12 -p $CM_CERTIFICATE_PASSWORD
+             keychain add-provisioning-profile profile.mobileprovision
+           fi
+           flutter build ios --release --no-codesign
+           
+       - name: Post build webhook
+         script: |
+           curl -X POST \
+             -H "Content-Type: application/json" \
+             -d '{"text":"✅ Build completed successfully!"}' \
+             $SLACK_WEBHOOK_URL || true
+             
+     artifacts:
+       - build/**/outputs/**/*.apk
+       - build/**/outputs/**/*.aab
+       - build/**/outputs/**/*.ipa
+       - coverage/lcov.info
+       - flutter_drive.log
+       
+     publishing:
+       email:
+         recipients:
+           - user@example.com
+           
+       google_play:
+         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+         track: internal
+         status: completed
+         
+       app_store_connect:
+         apple_id: $APP_ID
+         short_version: $BUILD_NUMBER
+         submit_to_testflight: true
+         
+       firebase:
+         firebase_project: $FIREBASE_PROJECT_ID
+         service_account: $FIREBASE_SERVICE_ACCOUNT_CREDENTIALS
