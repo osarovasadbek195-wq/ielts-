@@ -1,7 +1,7 @@
 workflows:
    main-workflow:
      name: IELTS & SAT Prep App CI/CD
-     instance_type: mac_mini
+     instance_type: linux-xlarge
      max_build_duration: 30
      
      environment:
