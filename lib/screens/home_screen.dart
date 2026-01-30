@@ -6,6 +6,7 @@ import '../widgets/study_card.dart';
 import '../widgets/progress_chart.dart';
 import '../widgets/streak_counter.dart';
 import '../widgets/daily_schedule.dart';
+import '../widgets/simple_progress_chart.dart';
 import 'resources_screen.dart';
 import 'fun_zone_screen.dart';
 
@@ -101,6 +102,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const ResourcesScreen(),
             const FunZoneScreen(),
           ],
+        ),
+        ),
+    );
+  }
+
+  void _showAnalytics() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Advanced Analytics',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SimpleProgressChart(),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
         ),
       ),
     );
