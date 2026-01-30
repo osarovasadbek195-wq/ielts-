@@ -96,42 +96,48 @@ class _FunZoneScreenState extends State<FunZoneScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Daily Quote Card
-            Card(
-              elevation: 4,
-              gradient: LinearGradient(
-                colors: [Colors.purple[400]!, Colors.pink[400]!],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.purple[400]!, Colors.pink[400]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.auto_awesome, color: Colors.white),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Daily Inspiration',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+              child: Card(
+                color: Colors.transparent,
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.auto_awesome, color: Colors.white),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Daily Inspiration',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      quotes[Random().nextInt(quotes.length)],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Text(
+                        quotes[Random().nextInt(quotes.length)],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -205,11 +211,24 @@ class _FunZoneScreenState extends State<FunZoneScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Lottie.asset(
-                      'assets/animations/meditation.json',
+                    // Placeholder for Lottie animation
+                    Container(
                       height: 100,
-                      repeat: true,
-                      reverse: true,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.teal[200]!, Colors.teal[400]!],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.self_improvement,
+                          size: 50,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -522,7 +541,7 @@ class _FunZoneScreenState extends State<FunZoneScreen> {
               subtitle: Text('$_wordsCollected words'),
             ),
             ListTile(
-              leading: const Icon(Icons.emoji_events, color: Colors.gold),
+              leading: const Icon(Icons.emoji_events, color: Colors.amber),
               title: const Text('Achievements'),
               subtitle: Text('5 unlocked'),
             ),
