@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class Task {
   final String id;
@@ -141,7 +142,7 @@ class TaskService extends ChangeNotifier {
       final tasksJson = prefs.getStringList('tasks') ?? [];
       
       _tasks = tasksJson
-          .map((json) => Task.fromJson(Map<String, dynamic>.from(json)))
+          .map((jsonString) => Task.fromJson(jsonDecode(jsonString)))
           .toList();
       
       // Separate completed tasks
@@ -158,9 +159,9 @@ class TaskService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final allTasks = [..._tasks, ..._completedTasks];
-      final tasksJson = allTasks.map((task) => task.toJson()).toList();
+      final tasksJson = allTasks.map((task) => jsonEncode(task.toJson())).toList();
       
-      await prefs.setStringList('tasks', tasksJson.map((json) => json.toString()).toList());
+      await prefs.setStringList('tasks', tasksJson);
     } catch (e) {
       debugPrint('Error saving tasks: $e');
     }

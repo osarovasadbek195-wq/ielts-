@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/ielts_provider.dart';
 import '../providers/sat_provider.dart';
 import '../providers/task_provider.dart';
+import '../services/task_service.dart';
 import 'resources_screen.dart';
 import 'fun_zone_screen.dart';
 import 'hypermax_analytics_screen.dart';
@@ -110,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       tabs: const [
                         Tab(text: 'IELTS', icon: Icon(Icons.book)),
                         Tab(text: 'SAT', icon: Icon(Icons.calculate)),
-                        Tab(text: 'Tasks', icon: Icons.task),
+                        Tab(text: 'Tasks', icon: Icon(Icons.task)),
                         Tab(text: 'Resources', icon: Icon(Icons.library_books)),
                         Tab(text: 'Fun Zone', icon: Icon(Icons.emoji_emotions)),
                         Tab(text: 'Analytics', icon: Icon(Icons.analytics)),

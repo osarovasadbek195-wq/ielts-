@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'providers/ielts_provider.dart';
 import 'providers/sat_provider.dart';
@@ -16,22 +18,34 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize database for web platform
+  if (kIsWeb) {
+    // For web, we'll use SharedPreferences instead of SQLite
+    // Skip database initialization for web
+  } else {
+    // Initialize database for mobile platforms
+    try {
+      await DatabaseService.instance.database;
+    } catch (e) {
+      debugPrint('Database initialization skipped: $e');
+    }
+  }
+  
   try {
-    // Initialize core services
-    await DatabaseService.instance.database;
+    // Initialize other services
     await GamificationService().initialize();
     await OfflineService().initialize();
     await HypermaxAnalyticsService().initialize();
     
     // Initialize task and notification services
     await TaskService().initialize();
-    await NotificationService().initialize();
     
-    // Request notification permissions
-    await NotificationService().requestPermissions();
-    
-    // Schedule daily motivation
-    await NotificationService().scheduleDailyMotivation();
+    // Only initialize notifications on mobile platforms
+    if (!kIsWeb) {
+      await NotificationService().initialize();
+      await NotificationService().requestPermissions();
+      await NotificationService().scheduleDailyMotivation();
+    }
     
   } catch (e) {
     debugPrint('Service initialization error: $e');

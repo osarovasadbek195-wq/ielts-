@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -75,7 +76,7 @@ class NotificationService {
         _motivationChannel,
         'Daily Motivation',
         description: 'Motivational quotes and tips',
-        importance: Importance.medium,
+        importance: Importance.defaultImportance,
         sound: RawResourceAndroidNotificationSound('notification_sound'),
       ),
       AndroidNotificationChannel(
@@ -170,7 +171,7 @@ class NotificationService {
               importance: Importance.high,
               priority: Priority.high,
               icon: '@mipmap/ic_launcher',
-              color: Color(0xFFFF6B6B),
+              color: const Color(0xFFFF6B6B),
             ),
             iOS: DarwinNotificationDetails(
               presentAlert: true,
@@ -205,10 +206,10 @@ class NotificationService {
             _motivationChannel,
             'Daily Motivation',
             channelDescription: 'Motivational quotes and tips',
-            importance: Importance.medium,
+            importance: Importance.defaultImportance,
             priority: Priority.defaultPriority,
             icon: '@mipmap/ic_launcher',
-            color: Color(0xFF4CAF50),
+            color: const Color(0xFF4CAF50),
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
@@ -245,7 +246,7 @@ class NotificationService {
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
-            color: Color(0xFFFFD700),
+            color: const Color(0xFFFFD700),
             largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           ),
           iOS: DarwinNotificationDetails(
@@ -287,7 +288,7 @@ class NotificationService {
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
-            color: Color(0xFFFF6B6B),
+            color: const Color(0xFFFF6B6B),
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
@@ -322,7 +323,7 @@ class NotificationService {
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
-            color: Color(0xFF2196F3),
+            color: const Color(0xFF2196F3),
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
