@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/ielts_provider.dart';
 import '../providers/sat_provider.dart';
+import '../providers/task_provider.dart';
 import 'resources_screen.dart';
 import 'fun_zone_screen.dart';
 import 'hypermax_analytics_screen.dart';
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     
     // Load today's progress
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -109,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       tabs: const [
                         Tab(text: 'IELTS', icon: Icon(Icons.book)),
                         Tab(text: 'SAT', icon: Icon(Icons.calculate)),
+                        Tab(text: 'Tasks', icon: Icons.task),
                         Tab(text: 'Resources', icon: Icon(Icons.library_books)),
                         Tab(text: 'Fun Zone', icon: Icon(Icons.emoji_emotions)),
                         Tab(text: 'Analytics', icon: Icon(Icons.analytics)),
@@ -133,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               children: [
                 _buildIELTSTab(),
                 _buildSATTab(),
+                _buildTasksTab(),
                 const ResourcesScreen(),
                 const FunZoneScreen(),
                 const HypermaxAnalyticsScreen(),
@@ -625,5 +628,290 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         provider.toggleAfternoonSession();
         break;
     }
+  }
+
+  Widget _buildTasksTab() {
+    return Consumer<TaskProvider>(
+      builder: (context, provider, child) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Task Statistics
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard('Total Tasks', provider.taskStats['total'].toString(), Icons.task, Colors.blue),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildStatCard('Completed', provider.taskStats['completed'].toString(), Icons.check_circle, Colors.green),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard('Today', provider.taskStats['today'].toString(), Icons.today, Colors.orange),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildStatCard('Overdue', provider.taskStats['overdue'].toString(), Icons.warning, Colors.red),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Quick Actions
+              const Text(
+                'Quick Actions',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => provider.addQuickTask('ielts', 'study_session'),
+                      icon: const Icon(Icons.add),
+                      label: const Text('IELTS Task'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => provider.addQuickTask('sat', 'practice_test'),
+                      icon: const Icon(Icons.add),
+                      label: const Text('SAT Task'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 12),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => provider.addDailyTasks(),
+                      icon: const Icon(Icons.calendar_today),
+                      label: const Text('Daily Tasks'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => provider.addWeeklyTasks(),
+                      icon: const Icon(Icons.date_range),
+                      label: const Text('Weekly Goals'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Today's Tasks
+              if (provider.todayTasks.isNotEmpty) ...[
+                const Text(
+                  'Today\'s Tasks',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...provider.todayTasks.map((task) => _buildTaskCard(task, provider)),
+                const SizedBox(height: 20),
+              ],
+              
+              // High Priority Tasks
+              if (provider.highPriorityTasks.isNotEmpty) ...[
+                const Text(
+                  'High Priority',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...provider.highPriorityTasks.take(3).map((task) => _buildTaskCard(task, provider)),
+                const SizedBox(height: 20),
+              ],
+              
+              // Upcoming Tasks
+              if (provider.upcomingTasks.isNotEmpty) ...[
+                const Text(
+                  'Upcoming (7 days)',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...provider.upcomingTasks.take(3).map((task) => _buildTaskCard(task, provider)),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTaskCard(Task task, TaskProvider provider) {
+    final isOverdue = provider.isOverdue(task.deadline);
+    final isApproaching = provider.isDeadlineApproaching(task.deadline);
+    
+    Color priorityColor;
+    switch (task.priority) {
+      case 'high':
+        priorityColor = Colors.red;
+        break;
+      case 'medium':
+        priorityColor = Colors.orange;
+        break;
+      default:
+        priorityColor = Colors.green;
+    }
+    
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isOverdue ? Colors.red : isApproaching ? Colors.orange : Colors.grey[300]!,
+            width: isOverdue || isApproaching ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Priority indicator
+            Container(
+              width: 4,
+              height: 60,
+              decoration: BoxDecoration(
+                color: priorityColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            
+            // Task info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  if (task.description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      task.description,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.schedule,
+                        size: 14,
+                        color: isOverdue ? Colors.red : isApproaching ? Colors.orange : Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        provider.formatDeadline(task.deadline),
+                        style: TextStyle(
+                          color: isOverdue ? Colors.red : isApproaching ? Colors.orange : Colors.grey[600],
+                          fontSize: 12,
+                          fontWeight: isOverdue || isApproaching ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: priorityColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          task.priority.toUpperCase(),
+                          style: TextStyle(
+                            color: priorityColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            // Action buttons
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!task.isCompleted)
+                  IconButton(
+                    onPressed: () => provider.completeTask(task),
+                    icon: const Icon(Icons.check_circle_outline),
+                    color: Colors.green,
+                  ),
+                if (task.isCompleted)
+                  IconButton(
+                    onPressed: () => provider.uncompleteTask(task),
+                    icon: const Icon(Icons.check_circle),
+                    color: Colors.green,
+                  ),
+                IconButton(
+                  onPressed: () => provider.deleteTask(task),
+                  icon: const Icon(Icons.delete_outline),
+                  color: Colors.red,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
