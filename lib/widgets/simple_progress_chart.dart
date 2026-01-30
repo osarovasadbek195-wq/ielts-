@@ -47,8 +47,8 @@ class SimpleProgressChart extends StatelessWidget {
         // SAT Progress
         _buildProgressBar(
           context,
-          'SAT Math',
-          satProvider.currentMathScore / 800.0, // Normalize to 0-1
+          'SAT Total',
+          satProvider.currentScore / 1600.0, // Normalize to 0-1
           Colors.purple,
         ),
         const SizedBox(height: 12),

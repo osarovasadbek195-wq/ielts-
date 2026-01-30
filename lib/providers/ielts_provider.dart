@@ -155,6 +155,26 @@ class IELTSProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleMorningSession() {
+    _morningCompleted = !_morningCompleted;
+    if (_morningCompleted) {
+      _wordsLearned += 30;
+      _updateStreak();
+    }
+    _saveData();
+    notifyListeners();
+  }
+
+  void toggleAfternoonSession() {
+    _afternoonCompleted = !_afternoonCompleted;
+    if (_afternoonCompleted) {
+      _wordsLearned += 25;
+      _updateStreak();
+    }
+    _saveData();
+    notifyListeners();
+  }
+
   void updateBandScore(double newScore) {
     _currentBand = newScore;
     _saveData();

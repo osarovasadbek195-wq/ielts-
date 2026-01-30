@@ -2,7 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SATProvider extends ChangeNotifier {
-  int _currentMathScore = 600;
+  int _currentScore = 1200;
+  int _mathScore = 600;
+  int _readingScore = 400;
+  int _writingScore = 400;
   int _problemsSolved = 0;
   int _practiceTests = 0;
   int _streak = 0;
@@ -24,12 +27,16 @@ class SATProvider extends ChangeNotifier {
   };
 
   // Getters
-  int get currentMathScore => _currentMathScore;
+  int get currentScore => _currentScore;
+  int get mathScore => _mathScore;
+  int get readingScore => _readingScore;
+  int get writingScore => _writingScore;
   int get problemsSolved => _problemsSolved;
   int get practiceTests => _practiceTests;
   int get streak => _streak;
   String get lastStudyDate => _lastStudyDate;
   double get averageTime => _averageTime;
+  int get averageScore => _practiceTests > 0 ? (_currentScore ~/ _practiceTests) : _currentScore;
   String get morningTopic => _morningTopic;
   String get afternoonTopic => _afternoonTopic;
   bool get morningCompleted => _morningCompleted;
@@ -42,50 +49,64 @@ class SATProvider extends ChangeNotifier {
   }
 
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    _currentMathScore = prefs.getInt('sat_current_score') ?? 600;
-    _problemsSolved = prefs.getInt('sat_problems_solved') ?? 0;
-    _practiceTests = prefs.getInt('sat_practice_tests') ?? 0;
-    _streak = prefs.getInt('sat_streak') ?? 0;
-    _lastStudyDate = prefs.getString('sat_last_study_date') ?? '';
-    _averageTime = prefs.getDouble('sat_average_time') ?? 87;
-    
-    // Load today's progress
-    final today = DateTime.now().toString().substring(0, 10);
-    if (prefs.getString('sat_today_date') == today) {
-      _morningCompleted = prefs.getBool('sat_morning_completed') ?? false;
-      _afternoonCompleted = prefs.getBool('sat_afternoon_completed') ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _currentScore = prefs.getInt('sat_current_score') ?? 1200;
+      _mathScore = prefs.getInt('sat_math_score') ?? 600;
+      _readingScore = prefs.getInt('sat_reading_score') ?? 400;
+      _writingScore = prefs.getInt('sat_writing_score') ?? 400;
+      _problemsSolved = prefs.getInt('sat_problems_solved') ?? 0;
+      _practiceTests = prefs.getInt('sat_practice_tests') ?? 0;
+      _streak = prefs.getInt('sat_streak') ?? 0;
+      _lastStudyDate = prefs.getString('sat_last_study_date') ?? '';
+      _averageTime = prefs.getDouble('sat_average_time') ?? 87;
+      
+      // Load today's progress
+      final today = DateTime.now().toString().substring(0, 10);
+      if (prefs.getString('sat_today_date') == today) {
+        _morningCompleted = prefs.getBool('sat_morning_completed') ?? false;
+        _afternoonCompleted = prefs.getBool('sat_afternoon_completed') ?? false;
+      }
+      
+      // Load skill scores
+      _skillScores['Heart of Algebra'] = prefs.getInt('sat_heart_algebra') ?? 150;
+      _skillScores['Problem Solving'] = prefs.getInt('sat_problem_solving') ?? 150;
+      _skillScores['Passport to Advanced Math'] = prefs.getInt('sat_advanced_math') ?? 150;
+      _skillScores['Additional Topics'] = prefs.getInt('sat_additional_topics') ?? 150;
+      
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading SAT data: $e');
     }
-    
-    // Load skill scores
-    _skillScores['Heart of Algebra'] = prefs.getInt('sat_heart_algebra') ?? 150;
-    _skillScores['Problem Solving'] = prefs.getInt('sat_problem_solving') ?? 150;
-    _skillScores['Passport to Advanced Math'] = prefs.getInt('sat_advanced_math') ?? 150;
-    _skillScores['Additional Topics'] = prefs.getInt('sat_additional_topics') ?? 150;
-    
-    notifyListeners();
   }
 
   Future<void> _saveData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('sat_current_score', _currentMathScore);
-    await prefs.setInt('sat_problems_solved', _problemsSolved);
-    await prefs.setInt('sat_practice_tests', _practiceTests);
-    await prefs.setInt('sat_streak', _streak);
-    await prefs.setString('sat_last_study_date', _lastStudyDate);
-    await prefs.setDouble('sat_average_time', _averageTime);
-    
-    // Save today's progress
-    final today = DateTime.now().toString().substring(0, 10);
-    await prefs.setString('sat_today_date', today);
-    await prefs.setBool('sat_morning_completed', _morningCompleted);
-    await prefs.setBool('sat_afternoon_completed', _afternoonCompleted);
-    
-    // Save skill scores
-    await prefs.setInt('sat_heart_algebra', _skillScores['Heart of Algebra']!);
-    await prefs.setInt('sat_problem_solving', _skillScores['Problem Solving']!);
-    await prefs.setInt('sat_advanced_math', _skillScores['Passport to Advanced Math']!);
-    await prefs.setInt('sat_additional_topics', _skillScores['Additional Topics']!);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('sat_current_score', _currentScore);
+      await prefs.setInt('sat_math_score', _mathScore);
+      await prefs.setInt('sat_reading_score', _readingScore);
+      await prefs.setInt('sat_writing_score', _writingScore);
+      await prefs.setInt('sat_problems_solved', _problemsSolved);
+      await prefs.setInt('sat_practice_tests', _practiceTests);
+      await prefs.setInt('sat_streak', _streak);
+      await prefs.setString('sat_last_study_date', _lastStudyDate);
+      await prefs.setDouble('sat_average_time', _averageTime);
+      
+      // Save today's progress
+      final today = DateTime.now().toString().substring(0, 10);
+      await prefs.setString('sat_today_date', today);
+      await prefs.setBool('sat_morning_completed', _morningCompleted);
+      await prefs.setBool('sat_afternoon_completed', _afternoonCompleted);
+      
+      // Save skill scores
+      await prefs.setInt('sat_heart_algebra', _skillScores['Heart of Algebra']!);
+      await prefs.setInt('sat_problem_solving', _skillScores['Problem Solving']!);
+      await prefs.setInt('sat_advanced_math', _skillScores['Passport to Advanced Math']!);
+      await prefs.setInt('sat_additional_topics', _skillScores['Additional Topics']!);
+    } catch (e) {
+      debugPrint('Error saving SAT data: $e');
+    }
   }
 
   void _updateDailyTopics() {
@@ -151,7 +172,8 @@ class SATProvider extends ChangeNotifier {
   }
 
   void updateMathScore(int newScore) {
-    _currentMathScore = newScore;
+    _mathScore = newScore;
+    _currentScore = _mathScore + _readingScore + _writingScore;
     _saveData();
     notifyListeners();
   }
@@ -195,11 +217,11 @@ class SATProvider extends ChangeNotifier {
 
   // Get motivational messages based on SAT progress
   String getMotivationalMessage() {
-    if (_currentMathScore >= 750) {
-      return 'Excellent! You\'re in the 750+ club!';
-    } else if (_currentMathScore >= 700) {
-      return 'Great job! Breaking 700 is huge!';
-    } else if (_currentMathScore >= 650) {
+    if (_currentScore >= 1400) {
+      return 'Excellent! You\'re in the 1400+ club!';
+    } else if (_currentScore >= 1300) {
+      return 'Great job! Breaking 1300 is huge!';
+    } else if (_currentScore >= 1200) {
       return 'Good progress! Keep pushing forward!';
     } else {
       return 'Every problem solved makes you stronger!';
@@ -208,7 +230,7 @@ class SATProvider extends ChangeNotifier {
 
   // Get progress percentage for target score
   double getProgressPercentage() {
-    return ((_currentMathScore - 600) / 150) * 100;
+    return ((_currentScore - 1000) / 500) * 100;
   }
 
   // Get recommended focus area based on skill scores
@@ -217,8 +239,8 @@ class SATProvider extends ChangeNotifier {
     return lowestSkill.key;
   }
 
-  // Calculate estimated total SAT score (assuming 600 in other sections)
+  // Calculate estimated total SAT score
   int getEstimatedTotalScore() {
-    return _currentMathScore + 600 + 600; // Math + Reading + Writing
+    return _currentScore;
   }
 }

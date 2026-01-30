@@ -254,19 +254,11 @@ class HypermaxAnalyticsService {
   }
 
   String _findBestEnergyTime() {
-    double bestEnergy = 0;
-    String bestTime = '09:00';
+    if (_energyLevels.isEmpty) return '09:00 - 11:00';
     
-    for (final principle in HYPERMAX_PRINCIPLES) {
-      if (_energyLevels[principle]! > bestEnergy) {
-        bestEnergy = _energyLevels[principle]!;
-        bestTime = _peakPerformanceTimes[principle]?.isNotEmpty == true
-            ? _peakPerformanceTimes[principle]!.first
-            : '09:00';
-      }
-    }
-    
-    return bestTime;
+    final bestEntry = _energyLevels.entries.reduce((a, b) => 
+        a.value > b.value ? a : b);
+    return bestEntry.key;
   }
 
   List<String> _generateRecoveryRecommendations() {
