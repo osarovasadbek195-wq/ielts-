@@ -14,6 +14,7 @@ import 'services/real_notification_service.dart';
 import 'services/database_service.dart';
 import 'services/gamification_service.dart';
 import 'services/offline_service.dart';
+import 'services/hypermax_analytics_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ void main() async {
   await RealNotificationService().initialize();
   await GamificationService().initialize();
   await OfflineService().initialize();
+  await HypermaxAnalyticsService().initialize();
   await Workmanager().initialize(callbackDispatcher);
   
   // Schedule daily notifications
@@ -53,12 +55,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
-        title: 'IELTS & SAT Prep',
+        title: 'IELTS & SAT Prep App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+          useMaterial3: true,
           textTheme: GoogleFonts.poppinsTextTheme(),
         ),
+        darkTheme: ThemeData(
+          primarySwatch: Colors.purple,
+          useMaterial3: true,
+          textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+        ),
+        themeMode: ThemeMode.system,
         home: const HomeScreen(),
         debugShowCheckedModeBanner: false,
       ),
